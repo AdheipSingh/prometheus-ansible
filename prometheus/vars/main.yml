@@ -1,0 +1,3 @@
+---
+scrape_time: 5s
+target_var: localhost  

@@ -1,0 +1,22 @@
+---
+ - name: INSTALL PROMETHEUS TAR FILE
+   become: yes
+   become_user: prometheus
+   shell: curl -LO "https://github.com/prometheus/prometheus/releases/download/v2.0.0/prometheus-2.0.0.linux-amd64.tar.gz"
+
+ - name: UNARCHIVE THE FILE
+   unarchive:
+       src: /home/prometheus/prometheus-2.0.0.linux-amd64.tar.gz 
+       dest: /home/prometheus/Prometheus/
+       remote_src: yes
+
+ - name: TEMPLATE THE prometheus.yml file
+   template:
+        src: /root/prometheus/templates/prometheusyml.j2
+        dest: /home/prometheus/Prometheus/prometheus-2.0.0.linux-amd64/prometheus.yml
+
+
+# - name: RUN PROMETHEUS
+#   become: yes
+#   become_user: prometheus
+#   shell: /Prometheus/prometheus-2.0.0.linux-amd64/./prometheus 

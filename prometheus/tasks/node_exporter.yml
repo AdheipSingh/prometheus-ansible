@@ -1,0 +1,53 @@
+---
+ - name: USERADD PROMETHEUS
+   user:
+        name: prometheus
+        state: present
+
+ - name: INSTALL NODE EXPORTER
+   become: yes
+   become_user: prometheus
+   shell: curl -LO "https://github.com/prometheus/node_exporter/releases/download/v0.15.2/node_exporter-0.15.2.linux-amd64.tar.gz"
+   
+ - name: MAKE DIRECTORY Prometheus/node_exporter
+   file:        
+        path: /home/prometheus/Prometheus/node_exporter
+        recurse: yes
+        state: directory
+
+ - name: UNARCHIVE THE NODE EXPORTER
+   unarchive: 
+        src: /home/prometheus/node_exporter-0.15.2.linux-amd64.tar.gz
+        dest: /home/prometheus/Prometheus/node_exporter
+        remote_src: yes
+
+ - name: CREATE THE SYSTEMD FILE FOR NODE EXPORTER
+   file: 
+        path: /etc/systemd/system/node_exporter.service
+        state: touch
+
+ - name: TEMPLATE THE SYSTEMD FILE FOR NODE EXPORTER
+   template: 
+        src: /root/prometheus/templates/node_exporter.j2
+        dest: /etc/systemd/system/node_exporter.service
+        
+ - name: RELOAD THE SYSTEMCTL DAEMON
+   shell: systemctl daemon-reload
+
+ - name: ENABLE AND START THE SYSTEMD SERVICE
+   service:
+        name: node_exporter.service
+        state: started
+        enabled: true
+
+ - name: PRINT THE STATUS OF THE SERVICE
+   shell: systemctl status node_exporter.service
+   ignore_errors: yes
+   register: status.node_exporter.service
+
+ - name: DEBUG THE OUTPUT OF SYSTEMCTL STATUS NODE_EXPORTER.SERVICE
+   debug:
+        var: status.node_exporter.service
+
+
+
